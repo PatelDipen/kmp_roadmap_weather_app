@@ -1,0 +1,36 @@
+# macOS
+.DS_Store
+
+# IntelliJ / Android Studio
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries
+.idea/**/shelf
+*.iml
+
+# Kotlin/Gradle
+.gradle/
+.kotlinc/
+.kotlin/
+**/build/
+**/out/
+
+# Logs
+*.log
+hs_err_pid*
+
+# Local environment
+local.properties
+
+# Android signing and local secrets
+*.jks
+*.keystore
+keystore.properties
+
+# iOS / Xcode user data and build output
+iosApp/build/
+iosApp/DerivedData/
+iosApp/**/*.xcuserdatad/
+iosApp/**/*.xcuserstate
+
