@@ -1,6 +1,14 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import java.util.Properties
+
+// Load local.properties
+val localProperties = Properties().apply {
+    val localPropsFile = rootProject.file("local.properties")
+    if (localPropsFile.exists()) load(localPropsFile.inputStream())
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,6 +16,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.buildkonfig)
 }
 
 kotlin {
@@ -107,3 +116,16 @@ compose.desktop {
         }
     }
 }
+
+buildkonfig {
+    packageName = "com.kmp.weather"
+
+    defaultConfigs {
+        buildConfigField(
+            STRING,
+            "OPEN_WEATHER_API_KEY",
+            localProperties.getProperty("OPEN_WEATHER_API_KEY") ?: ""
+        )
+    }
+}
+
