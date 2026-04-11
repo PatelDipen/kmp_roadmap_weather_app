@@ -25,13 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.kmp.weather.domain.model.ForecastItem
 import kotlin.math.round
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun WeatherForecastListScreen(
-    onForecastClick: (cityName: String, country: String, forecastItem: ForecastItem) -> Unit = { _, _, _ -> },
+    onForecastClick: (cityName: String, country: String, dayKey: String) -> Unit = { _, _, _ -> },
     viewModel: WeatherForecastListViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -80,11 +79,11 @@ fun WeatherForecastListScreen(
             }
 
             else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(uiState.forecasts) { item ->
+                items(uiState.dailyForecasts) { item ->
                     ForecastListItem(
                         item = item,
                         onClick = {
-                            onForecastClick(uiState.cityName, uiState.country, item)
+                            onForecastClick(uiState.cityName, uiState.country, item.dayKey)
                         }
                     )
                 }
@@ -95,7 +94,7 @@ fun WeatherForecastListScreen(
 
 @Composable
 private fun ForecastListItem(
-    item: ForecastItem,
+    item: DailyForecastSummary,
     onClick: () -> Unit
 ) {
     Card(
@@ -112,7 +111,7 @@ private fun ForecastListItem(
         ) {
             Column {
                 Text(
-                    text = item.dateTimeText,
+                    text = item.dayKey,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -120,13 +119,9 @@ private fun ForecastListItem(
                     text = item.description.replaceFirstChar { it.uppercaseChar() },
                     style = MaterialTheme.typography.bodyLarge
                 )
-                Text(
-                    text = "Humidity: ${item.humidity}%  Wind: ${item.windSpeed.formatOneDecimal()} m/s",
-                    style = MaterialTheme.typography.bodySmall
-                )
             }
             Text(
-                text = "${item.tempCelsius.formatOneDecimal()}°C",
+                text = "${item.minTempCelsius.formatOneDecimal()}° / ${item.maxTempCelsius.formatOneDecimal()}°",
                 style = MaterialTheme.typography.headlineMedium
             )
         }

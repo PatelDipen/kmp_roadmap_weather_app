@@ -17,8 +17,10 @@ object ForecastSelectionStore {
         this.forecasts = forecasts
     }
 
-    fun findByDateTime(dateTime: Long): ForecastItem? {
-        return forecasts.firstOrNull { it.dateTime == dateTime }
+    fun findByDay(dayKey: String): List<ForecastItem> {
+        return forecasts
+            .filter { it.dateTimeText.startsWith(dayKey) }
+            .sortedBy { it.dateTime }
     }
 }
 

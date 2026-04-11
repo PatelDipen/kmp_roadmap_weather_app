@@ -21,7 +21,6 @@ class WeatherApiService(
             parameter("q", city)
             parameter("appid", apiKey)
             parameter("units", "metric")
-            parameter("cnt", 10)
         }.body()
     }
 }

@@ -14,9 +14,16 @@ data class WeatherForecastListUiState(
     val isLoading: Boolean = false,
     val cityName: String = "",
     val country: String = "",
-    val forecasts: List<ForecastItem> = emptyList(),
+    val dailyForecasts: List<DailyForecastSummary> = emptyList(),
     val errorMessage: String? = null,
     val searchQuery: String = ""
+)
+
+data class DailyForecastSummary(
+    val dayKey: String,
+    val minTempCelsius: Double,
+    val maxTempCelsius: Double,
+    val description: String
 )
 
 class WeatherForecastListViewModel(
@@ -53,7 +60,7 @@ class WeatherForecastListViewModel(
                         isLoading = false,
                         cityName = forecast.cityName,
                         country = forecast.country,
-                        forecasts = forecast.items
+                        dailyForecasts = buildDailyForecasts(forecast.items)
                     )
                 }
                 .onFailure { error ->
@@ -63,6 +70,23 @@ class WeatherForecastListViewModel(
                     )
                 }
         }
+    }
+
+    private fun buildDailyForecasts(items: List<ForecastItem>): List<DailyForecastSummary> {
+        return items
+            .groupBy { it.dateTimeText.substringBefore(" ") }
+            .entries
+            .sortedBy { it.key }
+            .take(10)
+            .map { entry ->
+                val dayItems: List<ForecastItem> = entry.value
+                DailyForecastSummary(
+                    dayKey = entry.key,
+                    minTempCelsius = dayItems.minByOrNull { forecastItem -> forecastItem.tempCelsius }?.tempCelsius ?: 0.0,
+                    maxTempCelsius = dayItems.maxByOrNull { forecastItem -> forecastItem.tempCelsius }?.tempCelsius ?: 0.0,
+                    description = dayItems.firstOrNull()?.description ?: ""
+                )
+            }
     }
 }
 

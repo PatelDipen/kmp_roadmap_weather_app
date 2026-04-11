@@ -13,6 +13,6 @@ sealed interface Route {
     data class ForecastDetail(
         val cityName: String,
         val country: String,
-        val forecastDateTime: Long
+        val dayKey: String
     ) : Route
 }

@@ -28,12 +28,12 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable<Route.ForecastList> {
             WeatherForecastListScreen(
-                onForecastClick = { cityName, country, forecastItem ->
+                onForecastClick = { cityName, country, dayKey ->
                     navController.navigate(
                         Route.ForecastDetail(
                             cityName = cityName,
                             country = country,
-                            forecastDateTime = forecastItem.dateTime
+                            dayKey = dayKey
                         )
                     )
                 }
@@ -42,11 +42,12 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable<Route.ForecastDetail> { backStackEntry ->
             val route: Route.ForecastDetail = backStackEntry.toRoute()
-            val forecastItem = ForecastSelectionStore.findByDateTime(route.forecastDateTime)
+            val dailyForecasts = ForecastSelectionStore.findByDay(route.dayKey)
             WeatherForecastDetailScreen(
                 cityName = route.cityName,
                 country = route.country,
-                forecastItem = forecastItem,
+                dayKey = route.dayKey,
+                forecasts = dailyForecasts,
                 onBackClick = { navController.popBackStack() }
             )
         }
