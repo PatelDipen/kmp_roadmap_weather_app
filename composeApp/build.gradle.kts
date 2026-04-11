@@ -24,7 +24,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -34,12 +34,13 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.core.splashscreen)
+            implementation(libs.ktorClientOkhttp)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -50,8 +51,19 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.androidx.navigation.compose)
-            implementation(libs.kotlinx.serialization.core)
+            implementation(libs.androidxNavigationCompose)
+            implementation(libs.kotlinxSerializationCore)
+            implementation(libs.kotlinxSerializationJson)
+            implementation(libs.koinCore)
+            implementation(libs.koinCompose)
+            implementation(libs.koinComposeViewmodel)
+            implementation(libs.ktorClientCore)
+            implementation(libs.ktorClientContentNegotiation)
+            implementation(libs.ktorClientLogging)
+            implementation(libs.ktorSerializationKotlinxJson)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktorClientDarwin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -101,4 +113,3 @@ buildkonfig {
         )
     }
 }
-

@@ -8,8 +8,18 @@ fun NavController.navigateToForecastList() {
     }
 }
 
-fun NavController.navigateToForecastDetail(forecastId: String) {
-    navigate(Route.ForecastDetail(forecastId = forecastId))
+fun NavController.navigateToForecastDetail(
+    cityName: String,
+    country: String,
+    forecastDateTime: Long
+) {
+    navigate(
+        Route.ForecastDetail(
+            cityName = cityName,
+            country = country,
+            forecastDateTime = forecastDateTime
+        )
+    )
 }
 
 fun NavController.navigateBack() {

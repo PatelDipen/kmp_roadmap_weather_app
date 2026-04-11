@@ -10,5 +10,9 @@ sealed interface Route {
     data object ForecastList : Route
 
     @Serializable
-    data class ForecastDetail(val forecastId: String) : Route
+    data class ForecastDetail(
+        val cityName: String,
+        val country: String,
+        val forecastDateTime: Long
+    ) : Route
 }
