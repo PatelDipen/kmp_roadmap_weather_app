@@ -38,7 +38,7 @@ import kotlin.math.round
 
 @Composable
 fun WeatherForecastListScreen(
-    onForecastClick: (cityName: String, country: String, dayKey: String) -> Unit = { _, _, _ -> },
+    onForecastClick: (cityName: String, country: String, dayKey: String, latitude: String, longitude: String) -> Unit = { _, _, _, _, _ -> },
     viewModel: WeatherForecastListViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,7 +112,10 @@ fun WeatherForecastListScreen(
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = listOfNotNull(suggestion.admin1, suggestion.country).joinToString(", "),
+                                text = listOfNotNull(
+                                    suggestion.admin1,
+                                    suggestion.country
+                                ).joinToString(", "),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -156,7 +159,13 @@ fun WeatherForecastListScreen(
                     ForecastListItem(
                         item = item,
                         onClick = {
-                            onForecastClick(uiState.cityName, uiState.country, item.dayKey)
+                            onForecastClick(
+                                uiState.cityName,
+                                uiState.country,
+                                item.dayKey,
+                                uiState.latitude,
+                                uiState.longitude
+                            )
                         }
                     )
                 }

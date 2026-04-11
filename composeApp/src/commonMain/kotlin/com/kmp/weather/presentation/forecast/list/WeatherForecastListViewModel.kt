@@ -17,6 +17,8 @@ data class WeatherForecastListUiState(
     val isLoading: Boolean = false,
     val cityName: String = "",
     val country: String = "",
+    val latitude: String = "",
+    val longitude: String = "",
     val dailyForecasts: List<DailyForecastSummary> = emptyList(),
     val citySuggestions: List<CitySuggestion> = emptyList(),
     val isSuggestionsLoading: Boolean = false,
@@ -36,12 +38,24 @@ class WeatherForecastListViewModel(
     private val searchCitiesUseCase: SearchCitiesUseCase
 ) : ViewModel() {
 
+    private object DefaultForecastLocation {
+        const val LATITUDE = "56.95"
+        const val LONGITUDE = "24.09"
+        const val CITY_NAME = "Riga"
+        const val COUNTRY = "Latvia"
+    }
+
     private val _uiState = MutableStateFlow(WeatherForecastListUiState())
     val uiState: StateFlow<WeatherForecastListUiState> = _uiState.asStateFlow()
     private var searchJob: Job? = null
 
     init {
-        loadForecast("56.95", "24.09", cityName = "Riga", country = "Latvia")
+        loadForecast(
+            DefaultForecastLocation.LATITUDE,
+            DefaultForecastLocation.LONGITUDE,
+            cityName = DefaultForecastLocation.CITY_NAME,
+            country = DefaultForecastLocation.COUNTRY
+        )
     }
 
     fun onSearchQueryChange(query: String) {
@@ -70,7 +84,7 @@ class WeatherForecastListViewModel(
         _uiState.value = _uiState.value.copy(
             searchQuery = suggestion.displayName,
             citySuggestions = emptyList(),
-            isSuggestionsLoading = false
+            isSuggestionsLoading = false,
         )
         loadForecast(
             latitude = suggestion.latitude.toString(),
@@ -114,6 +128,8 @@ class WeatherForecastListViewModel(
                 .onSuccess { forecast ->
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
+                        latitude = latitude,
+                        longitude = longitude,
                         cityName = cityName,
                         country = country,
                         dailyForecasts = buildDailyForecasts(forecast.items)
