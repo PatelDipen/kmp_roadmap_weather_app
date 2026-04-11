@@ -9,9 +9,9 @@ class WeatherRepositoryImpl(
     private val apiService: WeatherApiService
 ) : WeatherRepository {
 
-    override suspend fun getWeatherForecast(city: String): Result<WeatherForecast> {
+    override suspend fun getWeatherForecast(latitude: String, longitude: String): Result<WeatherForecast> {
         return runCatching {
-            apiService.getForecast(city).toDomain()
+            apiService.getForecast(latitude, longitude).toDomain()
         }
     }
 }

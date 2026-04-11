@@ -1,25 +1,26 @@
 package com.kmp.weather.data.remote.mapper
 
-import com.kmp.weather.data.remote.dto.ForecastResponseDto
+import com.kmp.weather.data.remote.dto.Daily
+import com.kmp.weather.data.remote.dto.ForecastListDto
 import com.kmp.weather.domain.model.ForecastItem
 import com.kmp.weather.domain.model.WeatherForecast
 
-fun ForecastResponseDto.toDomain(): WeatherForecast {
+fun ForecastListDto.toDomain(): WeatherForecast {
     return WeatherForecast(
-        cityName = city.name,
-        country = city.country,
-        items = list.map { item ->
-            ForecastItem(
-                dateTime = item.dt,
-                dateTimeText = item.dtTxt,
-                tempCelsius = item.main.temp,
-                feelsLikeCelsius = item.main.feelsLike,
-                humidity = item.main.humidity,
-                description = item.weather.firstOrNull()?.description.orEmpty(),
-                iconCode = item.weather.firstOrNull()?.icon.orEmpty(),
-                windSpeed = item.wind.speed
-            )
-        }
+        items = daily.toDomainItems()
     )
+}
+
+private fun Daily.toDomainItems(): List<ForecastItem> {
+    val size = minOf(time.size, temperature2mMin.size, temperature2mMax.size, weatherCode.size)
+
+    return List(size) { index ->
+        ForecastItem(
+            dateText = time[index],
+            minTemperature = temperature2mMin[index],
+            maxTemperature = temperature2mMax[index],
+            weatherCode = weatherCode[index]
+        )
+    }
 }
 

@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.kmp.weather.presentation.forecast.ForecastSelectionStore
 import com.kmp.weather.presentation.forecast.detail.WeatherForecastDetailScreen
 import com.kmp.weather.presentation.forecast.list.WeatherForecastListScreen
 import com.kmp.weather.presentation.splash.SplashScreen
@@ -42,12 +41,10 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable<Route.ForecastDetail> { backStackEntry ->
             val route: Route.ForecastDetail = backStackEntry.toRoute()
-            val dailyForecasts = ForecastSelectionStore.findByDay(route.dayKey)
             WeatherForecastDetailScreen(
                 cityName = route.cityName,
                 country = route.country,
                 dayKey = route.dayKey,
-                forecasts = dailyForecasts,
                 onBackClick = { navController.popBackStack() }
             )
         }

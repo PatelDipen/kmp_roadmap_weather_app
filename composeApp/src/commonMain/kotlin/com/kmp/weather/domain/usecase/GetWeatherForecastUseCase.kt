@@ -6,9 +6,9 @@ import com.kmp.weather.domain.repository.WeatherRepository
 class GetWeatherForecastUseCase(
     private val repository: WeatherRepository
 ) {
-    suspend operator fun invoke(city: String): Result<WeatherForecast> {
-        if (city.isBlank()) return Result.failure(IllegalArgumentException("City name cannot be empty"))
-        return repository.getWeatherForecast(city.trim())
+    suspend operator fun invoke(latitude: String, longitude: String): Result<WeatherForecast> {
+        if (latitude.isBlank() || longitude.isBlank()) return Result.failure(IllegalArgumentException("Lat, Lon cannot be empty"))
+        return repository.getWeatherForecast(latitude, longitude)
     }
 }
 

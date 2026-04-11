@@ -1,6 +1,7 @@
 package com.kmp.weather.di
 
 import com.kmp.weather.data.remote.api.WeatherApiService
+import com.kmp.weather.data.remote.api.GeocodingApiService
 import com.kmp.weather.BuildKonfig
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -34,6 +35,10 @@ val networkModule = module {
             client = get(),
             apiKey = BuildKonfig.OPEN_WEATHER_API_KEY
         )
+    }
+
+    single {
+        GeocodingApiService(client = get())
     }
 }
 

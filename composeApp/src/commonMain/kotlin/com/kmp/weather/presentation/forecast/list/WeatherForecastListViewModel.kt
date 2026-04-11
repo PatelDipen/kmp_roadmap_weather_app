@@ -2,9 +2,12 @@ package com.kmp.weather.presentation.forecast.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kmp.weather.domain.model.CitySuggestion
 import com.kmp.weather.domain.model.ForecastItem
 import com.kmp.weather.domain.usecase.GetWeatherForecastUseCase
-import com.kmp.weather.presentation.forecast.ForecastSelectionStore
+import com.kmp.weather.domain.usecase.SearchCitiesUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +18,8 @@ data class WeatherForecastListUiState(
     val cityName: String = "",
     val country: String = "",
     val dailyForecasts: List<DailyForecastSummary> = emptyList(),
+    val citySuggestions: List<CitySuggestion> = emptyList(),
+    val isSuggestionsLoading: Boolean = false,
     val errorMessage: String? = null,
     val searchQuery: String = ""
 )
@@ -27,39 +32,90 @@ data class DailyForecastSummary(
 )
 
 class WeatherForecastListViewModel(
-    private val getWeatherForecastUseCase: GetWeatherForecastUseCase
+    private val getWeatherForecastUseCase: GetWeatherForecastUseCase,
+    private val searchCitiesUseCase: SearchCitiesUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(WeatherForecastListUiState())
     val uiState: StateFlow<WeatherForecastListUiState> = _uiState.asStateFlow()
+    private var searchJob: Job? = null
 
     init {
-        loadForecast("Riga")
+        loadForecast("56.95", "24.09", cityName = "Riga", country = "Latvia")
     }
 
     fun onSearchQueryChange(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
+
+        searchJob?.cancel()
+        if (query.length < 2) {
+            _uiState.value = _uiState.value.copy(citySuggestions = emptyList(), isSuggestionsLoading = false)
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(350)
+            loadSuggestions(query)
+        }
     }
 
     fun onSearchSubmit() {
-        val query = _uiState.value.searchQuery
-        if (query.isNotBlank()) loadForecast(query)
+        val suggestion = _uiState.value.citySuggestions.firstOrNull()
+        if (suggestion != null) {
+            onSuggestionSelected(suggestion)
+        }
     }
 
-    private fun loadForecast(city: String) {
+    fun onSuggestionSelected(suggestion: CitySuggestion) {
+        _uiState.value = _uiState.value.copy(
+            searchQuery = suggestion.displayName,
+            citySuggestions = emptyList(),
+            isSuggestionsLoading = false
+        )
+        loadForecast(
+            latitude = suggestion.latitude.toString(),
+            longitude = suggestion.longitude.toString(),
+            cityName = suggestion.name,
+            country = suggestion.country
+        )
+    }
+
+    private fun loadSuggestions(query: String) {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isSuggestionsLoading = true)
+            searchCitiesUseCase(query = query, count = 3)
+                .onSuccess { suggestions ->
+                    val currentQuery = _uiState.value.searchQuery
+                    if (currentQuery == query) {
+                        _uiState.value = _uiState.value.copy(
+                            citySuggestions = suggestions,
+                            isSuggestionsLoading = false
+                        )
+                    }
+                }
+                .onFailure {
+                    _uiState.value = _uiState.value.copy(
+                        citySuggestions = emptyList(),
+                        isSuggestionsLoading = false
+                    )
+                }
+        }
+    }
+
+    private fun loadForecast(
+        latitude: String,
+        longitude: String,
+        cityName: String = "",
+        country: String = ""
+    ) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
-            getWeatherForecastUseCase(city)
+            getWeatherForecastUseCase(latitude, longitude)
                 .onSuccess { forecast ->
-                    ForecastSelectionStore.cache(
-                        cityName = forecast.cityName,
-                        country = forecast.country,
-                        forecasts = forecast.items
-                    )
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        cityName = forecast.cityName,
-                        country = forecast.country,
+                        cityName = cityName,
+                        country = country,
                         dailyForecasts = buildDailyForecasts(forecast.items)
                     )
                 }
@@ -74,17 +130,12 @@ class WeatherForecastListViewModel(
 
     private fun buildDailyForecasts(items: List<ForecastItem>): List<DailyForecastSummary> {
         return items
-            .groupBy { it.dateTimeText.substringBefore(" ") }
-            .entries
-            .sortedBy { it.key }
-            .take(10)
-            .map { entry ->
-                val dayItems: List<ForecastItem> = entry.value
+            .map {
                 DailyForecastSummary(
-                    dayKey = entry.key,
-                    minTempCelsius = dayItems.minByOrNull { forecastItem -> forecastItem.tempCelsius }?.tempCelsius ?: 0.0,
-                    maxTempCelsius = dayItems.maxByOrNull { forecastItem -> forecastItem.tempCelsius }?.tempCelsius ?: 0.0,
-                    description = dayItems.firstOrNull()?.description ?: ""
+                    dayKey = it.dateText,
+                    minTempCelsius = it.minTemperature,
+                    maxTempCelsius = it.maxTemperature,
+                    description = "Weather code: ${it.weatherCode}"
                 )
             }
     }
