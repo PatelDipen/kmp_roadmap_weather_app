@@ -27,12 +27,13 @@ fun AppNavGraph(navController: NavHostController) {
 
         composable<Route.ForecastList> {
             WeatherForecastListScreen(
-                onForecastClick = { cityName, country, dayKey, latitude, longitude ->
+                onForecastClick = { cityName, country, dayKey, dayName, latitude, longitude ->
                     navController.navigate(
                         Route.ForecastDetail(
                             cityName = cityName,
                             country = country,
                             dayKey = dayKey,
+                            dayName = dayName,
                             latitude = latitude,
                             longitude = longitude
                         )
@@ -47,6 +48,7 @@ fun AppNavGraph(navController: NavHostController) {
                 cityName = route.cityName,
                 country = route.country,
                 dayKey = route.dayKey,
+                dayName = route.dayName,
                 latitude = route.latitude,
                 longitude = route.longitude,
                 onBackClick = { navController.popBackStack() }

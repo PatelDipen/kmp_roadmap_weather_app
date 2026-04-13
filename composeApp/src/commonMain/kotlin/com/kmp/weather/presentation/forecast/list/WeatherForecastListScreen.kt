@@ -1,5 +1,6 @@
 package com.kmp.weather.presentation.forecast.list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -28,9 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.compose.viewmodel.koinViewModel
@@ -38,7 +42,7 @@ import kotlin.math.round
 
 @Composable
 fun WeatherForecastListScreen(
-    onForecastClick: (cityName: String, country: String, dayKey: String, latitude: String, longitude: String) -> Unit = { _, _, _, _, _ -> },
+    onForecastClick: (cityName: String, country: String, dayKey: String,dayName: String, latitude: String, longitude: String) -> Unit = { _, _, _,_, _, _ -> },
     viewModel: WeatherForecastListViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -163,6 +167,7 @@ fun WeatherForecastListScreen(
                                 uiState.cityName,
                                 uiState.country,
                                 item.dayKey,
+                                item.dayName,
                                 uiState.latitude,
                                 uiState.longitude
                             )
@@ -185,27 +190,44 @@ private fun ForecastListItem(
             .clickable(onClick = onClick)
     ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .background(MaterialTheme.colorScheme.primaryFixedDim)
         ) {
-            Column {
+            Box(
+                modifier = Modifier
+                    .size(48.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
-                    text = item.dayName,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    text = item.description.replaceFirstChar { it.uppercaseChar() },
-                    style = MaterialTheme.typography.bodyLarge
+                    text = item.weatherIcon,
                 )
             }
-            Text(
-                text = "${item.minTempCelsius.formatOneDecimal()}° / ${item.maxTempCelsius.formatOneDecimal()}°",
-                style = MaterialTheme.typography.headlineMedium
-            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp).padding(end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = item.dayName,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = item.description.replaceFirstChar { it.uppercaseChar() },
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                }
+                Text(
+                    text = "${item.minTempCelsius.formatOneDecimal()}° / ${item.maxTempCelsius.formatOneDecimal()}°",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+            }
         }
     }
 }
@@ -213,4 +235,21 @@ private fun ForecastListItem(
 private fun Double.formatOneDecimal(): String {
     val rounded = round(this * 10) / 10
     return rounded.toString()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WeatherForecastListScreenPreview() {
+    ForecastListItem(
+        item = DailyForecastSummary(
+            dayKey = "2026-04-13",
+            dayName = "Today",
+            minTempCelsius = 12.3,
+            maxTempCelsius = 18.7,
+            description = "Partly cloudy",
+            weatherIcon = "⛅",
+            weatherCode = 2
+        ),
+        onClick = {}
+    )
 }

@@ -14,6 +14,7 @@ sealed interface Route {
         val cityName: String,
         val country: String,
         val dayKey: String,
+        val dayName: String,
         val latitude: String,
         val longitude: String
     ) : Route

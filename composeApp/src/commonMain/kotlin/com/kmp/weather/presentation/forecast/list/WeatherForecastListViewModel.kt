@@ -7,6 +7,7 @@ import com.kmp.weather.domain.model.ForecastItem
 import com.kmp.weather.domain.usecase.GetWeatherForecastUseCase
 import com.kmp.weather.domain.usecase.SearchCitiesUseCase
 import com.kmp.weather.utils.DateUtils
+import com.kmp.weather.utils.WeatherCodeMapper
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,9 @@ data class DailyForecastSummary(
     val dayName: String,
     val minTempCelsius: Double,
     val maxTempCelsius: Double,
-    val description: String
+    val description: String,
+    val weatherIcon: String,
+    val weatherCode: Int
 )
 
 class WeatherForecastListViewModel(
@@ -157,7 +160,9 @@ class WeatherForecastListViewModel(
                 },
                 minTempCelsius = item.minTemperature,
                 maxTempCelsius = item.maxTemperature,
-                description = "Weather code: ${item.weatherCode}"
+                description = WeatherCodeMapper.getDescription(item.weatherCode),
+                weatherIcon = WeatherCodeMapper.getIcon(item.weatherCode),
+                weatherCode = item.weatherCode
             )
         }
     }
