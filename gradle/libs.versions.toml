@@ -16,6 +16,7 @@ junit = "4.13.2"
 kotlin = "2.3.20"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.8.1"
+kotlinx-datetime = "0.6.1"
 buildkonfig = "0.15.2"
 material3 = "1.10.0-alpha05"
 androidx-navigation = "2.9.2"
@@ -44,6 +45,7 @@ compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-previ
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinxSerializationCore = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 androidxNavigationCompose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 koinCore = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koinCompose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }

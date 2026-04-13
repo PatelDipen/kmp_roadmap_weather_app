@@ -193,7 +193,7 @@ private fun ForecastListItem(
         ) {
             Column {
                 Text(
-                    text = item.dayKey,
+                    text = item.dayName,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

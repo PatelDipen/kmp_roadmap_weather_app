@@ -54,6 +54,7 @@ kotlin {
             implementation(libs.androidxNavigationCompose)
             implementation(libs.kotlinxSerializationCore)
             implementation(libs.kotlinxSerializationJson)
+            implementation(libs.kotlinxDatetime)
             implementation(libs.koinCore)
             implementation(libs.koinCompose)
             implementation(libs.koinComposeViewmodel)

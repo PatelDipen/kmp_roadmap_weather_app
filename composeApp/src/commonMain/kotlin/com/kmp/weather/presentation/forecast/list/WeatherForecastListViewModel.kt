@@ -6,6 +6,7 @@ import com.kmp.weather.domain.model.CitySuggestion
 import com.kmp.weather.domain.model.ForecastItem
 import com.kmp.weather.domain.usecase.GetWeatherForecastUseCase
 import com.kmp.weather.domain.usecase.SearchCitiesUseCase
+import com.kmp.weather.utils.DateUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ data class WeatherForecastListUiState(
 
 data class DailyForecastSummary(
     val dayKey: String,
+    val dayName: String,
     val minTempCelsius: Double,
     val maxTempCelsius: Double,
     val description: String
@@ -145,15 +147,19 @@ class WeatherForecastListViewModel(
     }
 
     private fun buildDailyForecasts(items: List<ForecastItem>): List<DailyForecastSummary> {
-        return items
-            .map {
-                DailyForecastSummary(
-                    dayKey = it.dateText,
-                    minTempCelsius = it.minTemperature,
-                    maxTempCelsius = it.maxTemperature,
-                    description = "Weather code: ${it.weatherCode}"
-                )
-            }
+        return items.mapIndexed { index, item ->
+            DailyForecastSummary(
+                dayKey = item.dateText,
+                dayName = when (index) {
+                    0 -> "Today"
+                    1 -> "Tomorrow"
+                    else -> DateUtils.formatDateToDayMonth(item.dateText)
+                },
+                minTempCelsius = item.minTemperature,
+                maxTempCelsius = item.maxTemperature,
+                description = "Weather code: ${item.weatherCode}"
+            )
+        }
     }
 }
 
